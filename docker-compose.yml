@@ -1,0 +1,34 @@
+version: '3.3'
+
+services:
+    web:
+        build:
+            context: ./web
+            dockerfile: Dockerfile
+        container_name: simple-app
+        command: gunicorn --bind 0.0.0.0:80 app:app
+        ports:
+          - "80:80"
+        restart: unless-stopped
+    jenkins:
+        build:
+            context: ./jenkins
+            dockerfile: Dockerfile
+        container_name: jenkins-docker
+        ports:
+          - "8080:8080"
+          - "50000:50000"
+        volumes:
+          - jenkins_home:/var/jenkins_home
+        restart: unless-stopped
+    sonarqube:
+        build:
+            context: ./sonarqube
+            dockerfile: Dockerfile
+        container_name: sonarqube
+        environment:
+          - "SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true"
+        ports:
+          - "9000:9000"
+volumes:
+    jenkins_home:
